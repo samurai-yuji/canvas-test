@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Drawing on canvas</title>
+	<style>
+		body {
+			text-align: center;
+			background: #fafafa;
+		}
+	
+		#rectangle {
+			border: solid 1px #000000;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="rect"></canvas>
+	
+	<script>
+
+		var flag = true;
+		var stoptime = null;
+		var starttime = null;
+		var wx, wy;
+
+		class Rectangle {
+			constructor(ctx,x0,y0,w,h,v0,acc,color){
+				this.ctx = ctx;
+				this.x0 = x0;
+				this.y0 = y0;
+				this.w = w;
+				this.h = h;
+				this.v0 = v0;
+				this.acc = acc;
+				this.color= color;
+				this.cidx = 0;
+				this.start = null;
+			}
+
+			animate(timestamp){
+				if(!this.start){this.start = timestamp;} 
+				var t = timestamp - this.start;
+
+				var y = this.y0+this.v0*t+this.acc*t*t/2;
+				this.ctx.fillStyle = this.color[this.cidx % this.color.length];
+				this.ctx.fillRect(this.x0,y,this.w,this.h);
+				if(wy+this.y0 < y){
+					this.cidx++;
+					this.start = null;
+				}
+			}
+		}
+
+		class Circle {
+			constructor(ctx,x0,y0,rad,v0,acc,color){
+				this.ctx = ctx;
+				this.x0 = x0;
+				this.y0 = y0;
+				this.rad = rad;
+				this.v0 = v0;
+				this.acc = acc;
+				this.color = color;
+				this.cidx = 0;
+				this.start = null;
+			}
+
+			animate(timestamp){
+				if(!this.start){this.start = timestamp;} 
+				var t = timestamp - this.start;
+
+				var y = this.y0+this.v0*t+this.acc*t*t/2;
+				this.ctx.beginPath();
+				this.ctx.fillStyle = this.color[this.cidx % this.color.length];
+				this.ctx.arc(this.x0,y,this.rad,0,Math.PI*2,false);
+				this.ctx.fill();
+				if(wy+this.y0 < y){
+					this.cidx++;
+					this.start = null;
+				}
+			}
+		}
+
+		window.onload = function(){
+
+			var canvas = document.getElementById("rect");
+			var ctx = canvas.getContext('2d');
+
+			wx = window.innerWidth;
+			wy = window.innerHeight;
+
+			canvas.width = wx;
+			canvas.height= wy;
+
+			var recs = [];
+			var recss = [];
+
+			var cirs = [];
+			var cirss = [];
+
+			var recs2 = [];
+			var recs2s = [];
+
+			for(var n=0;n<3;n++){
+
+				var recsa = 9.8/(Math.random()*10000);
+				var cirsa = 9.8/(Math.random()*10000);
+				var recs2a = 9.8/(Math.random()*10000);
+
+				recs.push(new Rectangle(ctx,100+150*n,0,100,100,1,recsa,["red","blue","mediumseagreen"]));
+				cirs.push(new Circle(ctx,500+150*n,0,50,1,cirsa,["blue","green","hotpink"]));
+				recs2.push(new Rectangle(ctx,800+150*n,0,100,100,1,recs2a,["green","red","royalblue"]));
+
+				recss.push(new Rectangle(ctx,100+150*n+15,-10,100,100,1,recsa,["dimgray","dimgray"]));
+				cirss.push(new Circle(ctx,500+150*n+15,-10,50,1,cirsa,["dimgray","dimgray"]));
+				recs2s.push(new Rectangle(ctx,800+150*n+15,-10,100,100,1,recs2a,["dimgray","dimgray"]));
+
+			}
+
+			var start = null;
+			var count = 0;
+			var v0 = 1;
+			var a  = 9.8;
+
+			function placeholder(timestamp){
+				if(flag){
+					window.requestAnimationFrame(draw);
+				}else{
+					window.requestAnimationFrame(placeholder);
+				}
+			}
+
+			var diff = 0;
+
+			function draw(timestamp){
+
+				if(flag){
+					if(stoptime){
+						diff += timestamp-stoptime;
+						stoptime = null;
+					}
+					window.requestAnimationFrame(draw);
+				}else{
+					stoptime = timestamp;
+					window.requestAnimationFrame(placeholder);
+				}
+
+				console.log(timestamp,diff);
+
+				ctx.clearRect(0,0,wx,wy);
+
+				for(var n=0;n<3;n++){
+					recss[n].animate(timestamp-diff);
+					cirss[n].animate(timestamp-diff);
+					recs2s[n].animate(timestamp-diff);
+				}
+
+				for(var n=0;n<3;n++){
+					recs[n].animate(timestamp-diff);
+					cirs[n].animate(timestamp-diff);
+					recs2[n].animate(timestamp-diff);
+				}
+
+			}
+
+			window.requestAnimationFrame(draw);
+
+			document.addEventListener("click", function(e){
+				flag = !flag;
+			});
+
+		};
+
+	</script>
+
+</body>
+</html>

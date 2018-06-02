@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Drawing on canvas</title>
+	<style>
+		body {
+			text-align: center;
+			background: #fafafa;
+		}
+	
+		#rectangle {
+			border: solid 1px #000000;
+		}
+	</style>
+</head>
+<body>
+	<p>First click : Fix the beginning point.</p>
+	<p>Second click : Fix the line.</p>
+	<p>Third click : Clear the line and go back to the first.</p>
+
+	<!--<canvas id="rectangle" width="300" height="300"></canvas>//-->
+	<canvas id="rect"></canvas>
+	
+	<script>
+
+		function line(ctx,x1,y1,x2,y2,color){
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.stroke();
+		}
+
+		window.onload = function(){
+			var canvas = document.getElementById("rect");
+
+			var wx = window.innerWidth;
+			var wy = window.innerHeight;
+
+			canvas.width = wx;
+			canvas.height= wy;
+
+			var status = 0;
+			var sx=0;
+			var sy=0;
+
+			document.addEventListener("click", function(e){
+				if(status == 0){
+					var mx = e.offsetX;
+					var my = e.offsetY;
+					console.log(mx,my,status);
+
+					sx=mx;
+					sy=my;
+					status = 1;
+				}else if(status == 1){
+					status = 2;
+				}else if(status == 2){
+					var ctx = canvas.getContext('2d');
+					ctx.clearRect(0,0,wx,wy);
+
+					sx=sy=0;
+					status = 0;
+				}
+			})
+	
+			document.addEventListener("mousemove", function(e){
+				if(status == 1){
+					var ctx = canvas.getContext('2d');
+					ctx.clearRect(0,0,wx,wy);
+	
+					var mx = e.offsetX;
+					var my = e.offsetY;
+					console.log(mx,my,status);
+
+					line(ctx,sx,sy,mx,my);
+				}
+			})
+		}
+
+	</script>
+
+</body>
+</html>

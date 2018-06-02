@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Drawing on canvas</title>
+	<style>
+		body {
+			text-align: center;
+			background: #fafafa;
+		}
+	
+		#rectangle {
+			border: solid 1px #000000;
+		}
+	</style>
+</head>
+<body>
+	<!--<canvas id="rectangle" width="300" height="300"></canvas>//-->
+	<canvas id="rect"></canvas>
+	
+	<script>
+
+		function draw(ctx,x1,y1,x2,y2,color){
+			ctx.fillStyle = color;
+			ctx.fillRect(x1,y1,x2,y2);
+		}
+
+		window.onload = function(){
+			var canvas = document.getElementById("rect");
+
+			var wx = window.innerWidth;
+			var wy = window.innerHeight;
+
+			canvas.width = wx;
+			canvas.height= wy;
+
+			document.addEventListener("mousemove", function(e){
+				var ctx = canvas.getContext('2d');
+				ctx.clearRect(0,0,wx,wy);
+
+				var mx = e.clientX;
+				var my = e.clientY;
+				console.log(mx,my);
+
+				draw(ctx,0,0,mx,my,"red");
+				draw(ctx,mx,0,wx,my,"blue");
+				draw(ctx,0,my,mx,wy,"yellow");
+				draw(ctx,mx,my,wx,wy,"green");
+			})
+		}
+
+	</script>
+
+	<script>
+		// 読み込み時に実行
+		/*
+		window.onload = function(){
+			// HTMLと紐付ける記述
+			var rect_canvas = document.getElementById("rectangle");
+			var rect_ctx = rect_canvas.getContext('2d');
+			
+			// マウスの座標値を取得
+			var mouse = {
+				startX: 0,
+				startY: 0,
+				x: 0,
+				y: 0,
+				color: "black",
+				isDrawing:false
+			};
+			
+			var borderWidth = 1;
+			
+			rect_canvas.addEventListener("mousemove", function(e){
+				// マウスが動いたら座標値を取得
+				var rect = e.target.getBoundingClientRect();
+				mouse.x = e.clientX - rect.left - borderWidth;
+				mouse.y = e.clientY - rect.top - borderWidth;
+				
+				// isDrawingがtrueなら描画
+				if(mouse.isDrawing){
+					rect_ctx.beginPath();
+					rect_ctx.moveTo(mouse.startX, mouse.startY);
+					rect_ctx.lineTo(mouse.x, mouse.y);
+					rect_ctx.strokeStyle = mouse.color;
+					mouse.startX = mouse.x;
+					mouse.startY = mouse.y;
+				}
+				
+				// マウスを押したら、描画開始
+				rect_canvas.addEventListener("mousedown",function(e){
+					mouse.isDrawing = true;
+					mouse.startX = mouse.x;
+					mouse.startY = mouse.y;
+					rect_ctx.strokeRect(0, 0, mouse.x, mouse.y);
+				});
+				
+				// マウスを離したら、描画停止
+				rect_canvas.addEventListener("mouseup", function(e){
+				   mouse.isDrawing = false; 
+				});
+			});
+			
+		};
+		*/
+	</script>
+</body>
+<
